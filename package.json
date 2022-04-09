@@ -199,7 +199,7 @@
     "branches": [
       "master"
     ],
-    "npmPublish": true,
+    "npmPublish": false,
     "publish": [
       {
         "path": "semantic-release-docker-buildx",
