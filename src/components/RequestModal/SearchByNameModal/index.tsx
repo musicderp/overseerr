@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import { SonarrSeries } from '../../../../server/api/servarr/sonarr';
 import globalMessages from '../../../i18n/globalMessages';
 import Alert from '../../Common/Alert';
+import CachedImage from '../../Common/CachedImage';
 import { SmallLoadingSpinner } from '../../Common/LoadingSpinner';
 import Modal from '../../Common/Modal';
 
@@ -63,26 +64,26 @@ const SearchByNameModal: React.FC<SearchByNameModalProps> = ({
         {data?.slice(0, 6).map((item) => (
           <button
             key={item.tvdbId}
-            className="container mx-auto flex h-40 scale-100 transform-gpu cursor-pointer flex-col items-center justify-center space-y-4 rounded-xl outline-none transition hover:scale-105 focus:outline-none focus:ring focus:ring-indigo-500 focus:ring-opacity-70"
+            className="container flex flex-col items-center justify-center h-40 mx-auto space-y-4 transition scale-100 outline-none cursor-pointer focus:ring focus:ring-indigo-500 focus:ring-opacity-70 focus:outline-none rounded-xl transform-gpu hover:scale-105"
             onClick={() => handleClick(item.tvdbId)}
           >
             <div
-              className={`flex h-40 w-full items-center overflow-hidden rounded-xl bg-gray-600 p-2 shadow transition ${
+              className={`bg-gray-600 h-40 overflow-hidden w-full flex items-center p-2 rounded-xl shadow transition ${
                 tvdbId === item.tvdbId ? 'ring ring-indigo-500' : ''
               } `}
             >
-              <div className="flex w-24 flex-none items-center space-x-4">
-                <img
+              <div className="flex items-center flex-none w-24 space-x-4">
+                <CachedImage
                   src={
                     item.remotePoster ??
                     '/images/overseerr_poster_not_found.png'
                   }
                   alt={item.title}
-                  className="h-100 w-auto rounded-md"
+                  className="w-auto rounded-md h-100"
                 />
               </div>
-              <div className="flex-grow self-start p-3 text-left">
-                <div className="text-grey-200 text-sm font-medium">
+              <div className="self-start flex-grow p-3 text-left">
+                <div className="text-sm font-medium text-grey-200">
                   {item.title}
                 </div>
                 <div className="h-24 overflow-hidden text-sm text-gray-400">

@@ -1,14 +1,15 @@
 import { ArrowLeftIcon, MailIcon } from '@heroicons/react/solid';
 import axios from 'axios';
 import { Field, Form, Formik } from 'formik';
-import Link from 'next/link';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import * as Yup from 'yup';
+import addBasePath from '../../utils/addBasePath';
 import Button from '../Common/Button';
 import ImageFader from '../Common/ImageFader';
 import PageTitle from '../Common/PageTitle';
 import LanguagePicker from '../Layout/LanguagePicker';
+import Link from '../Link';
 
 const messages = defineMessages({
   passwordreset: 'Password Reset',
@@ -32,7 +33,7 @@ const ResetPassword: React.FC = () => {
   });
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-gray-900 py-14">
+    <div className="relative flex flex-col min-h-screen bg-gray-900 py-14">
       <PageTitle title={intl.formatMessage(messages.passwordreset)} />
       <ImageFader
         forceOptimize
@@ -45,12 +46,16 @@ const ResetPassword: React.FC = () => {
           '/images/rotate6.jpg',
         ]}
       />
-      <div className="absolute top-4 right-4 z-50">
+      <div className="absolute z-50 top-4 right-4">
         <LanguagePicker />
       </div>
-      <div className="relative z-40 mt-10 flex flex-col items-center px-4 sm:mx-auto sm:w-full sm:max-w-md">
-        <img src="/logo_stacked.svg" className="mb-10 max-w-full" alt="Logo" />
-        <h2 className="mt-2 text-center text-3xl font-extrabold leading-9 text-gray-100">
+      <div className="relative z-40 flex flex-col items-center px-4 mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+        <img
+          src={addBasePath('/logo_stacked.svg')}
+          className="max-w-full mb-10"
+          alt="Logo"
+        />
+        <h2 className="mt-2 text-3xl font-extrabold leading-9 text-center text-gray-100">
           {intl.formatMessage(messages.resetpassword)}
         </h2>
       </div>
@@ -62,10 +67,10 @@ const ResetPassword: React.FC = () => {
           <div className="px-10 py-8">
             {hasSubmitted ? (
               <>
-                <p className="text-md text-gray-300">
+                <p className="text-gray-300 text-md">
                   {intl.formatMessage(messages.requestresetlinksuccessmessage)}
                 </p>
-                <span className="mt-4 flex justify-center rounded-md shadow-sm">
+                <span className="flex justify-center mt-4 rounded-md shadow-sm">
                   <Link href="/login" passHref>
                     <Button as="a" buttonType="ghost">
                       <ArrowLeftIcon />
@@ -99,18 +104,18 @@ const ResetPassword: React.FC = () => {
                       <div>
                         <label
                           htmlFor="email"
-                          className="my-1 block text-sm font-medium leading-5 text-gray-400 sm:mt-px"
+                          className="block my-1 text-sm font-medium leading-5 text-gray-400 sm:mt-px"
                         >
                           {intl.formatMessage(messages.email)}
                         </label>
-                        <div className="mt-1 mb-2 sm:col-span-2 sm:mt-0">
+                        <div className="mt-1 mb-2 sm:mt-0 sm:col-span-2">
                           <div className="form-input-field">
                             <Field
                               id="email"
                               name="email"
                               type="text"
                               inputMode="email"
-                              className="form-input-area block w-full min-w-0 flex-1 rounded-md border border-gray-500 bg-gray-700 text-white transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                              className="flex-1 block w-full min-w-0 text-white transition duration-150 ease-in-out bg-gray-700 border border-gray-500 rounded-md form-input sm:text-sm sm:leading-5"
                             />
                           </div>
                           {errors.email && touched.email && (
@@ -118,7 +123,7 @@ const ResetPassword: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      <div className="mt-4 border-t border-gray-700 pt-5">
+                      <div className="pt-5 mt-4 border-t border-gray-700">
                         <div className="flex justify-end">
                           <span className="inline-flex rounded-md shadow-sm">
                             <Button
