@@ -1,6 +1,6 @@
 {
   "name": "overseerr",
-  "version": "1.29.2",
+  "version": "1.29.3",
   "private": true,
   "scripts": {
     "dev": "nodemon -e ts --watch server --watch overseerr-api.yml -e .json,.ts,.yml -x ts-node --files --project server/tsconfig.json server/index.ts",
@@ -199,7 +199,7 @@
     "branches": [
       "master"
     ],
-    "npmPublish": false,
+    "npmPublish": true,
     "publish": [
       {
         "path": "semantic-release-docker-buildx",
@@ -207,7 +207,7 @@
           "COMMIT_TAG": "$GITHUB_SHA"
         },
         "imageNames": [
-          "sctx/overseerr",
+          "musicderp/overseerr",
           "ghcr.io/musicderp/overseerr"
         ],
         "platforms": [
