@@ -1,6 +1,6 @@
 {
   "name": "overseerr",
-  "version": "1.29.1",
+  "version": "1.29.2",
   "private": true,
   "scripts": {
     "dev": "nodemon -e ts --watch server --watch overseerr-api.yml -e .json,.ts,.yml -x ts-node --files --project server/tsconfig.json server/index.ts",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sct/overseerr.git"
+    "url": "https://github.com/musicderp/overseerr.git"
   },
   "license": "MIT",
   "dependencies": {
@@ -208,7 +208,7 @@
         },
         "imageNames": [
           "sctx/overseerr",
-          "ghcr.io/sct/overseerr"
+          "ghcr.io/musicderp/overseerr"
         ],
         "platforms": [
           "linux/amd64",
