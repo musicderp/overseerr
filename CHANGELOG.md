@@ -1,3 +1,9 @@
+## [1.29.2](https://github.com/musicderp/overseerr/compare/v1.29.1...v1.29.2) (2022-04-09)
+
+### Features
+
+* merge basepath into this
+
 ## [1.29.1](https://github.com/sct/overseerr/compare/v1.29.0...v1.29.1) (2022-04-06)
 
 
