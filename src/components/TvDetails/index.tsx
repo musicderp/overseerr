@@ -7,9 +7,7 @@ import {
 } from '@heroicons/react/outline';
 import { hasFlag } from 'country-flag-icons';
 import 'country-flag-icons/3x2/flags.css';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import useSWR from 'swr';
 import type { RTRating } from '../../../server/api/rottentomatoes';
@@ -24,6 +22,7 @@ import RTFresh from '../../assets/rt_fresh.svg';
 import RTRotten from '../../assets/rt_rotten.svg';
 import TmdbLogo from '../../assets/tmdb_logo.svg';
 import useLocale from '../../hooks/useLocale';
+import { useRouter } from '../../hooks/useRouter';
 import useSettings from '../../hooks/useSettings';
 import { Permission, useUser } from '../../hooks/useUser';
 import globalMessages from '../../i18n/globalMessages';
@@ -36,6 +35,7 @@ import PageTitle from '../Common/PageTitle';
 import PlayButton, { PlayButtonLink } from '../Common/PlayButton';
 import ExternalLinkBlock from '../ExternalLinkBlock';
 import IssueModal from '../IssueModal';
+import Link from '../Link';
 import ManageSlideOver from '../ManageSlideOver';
 import MediaSlider from '../MediaSlider';
 import PersonCard from '../PersonCard';
@@ -80,18 +80,15 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
   const intl = useIntl();
   const { locale } = useLocale();
   const [showRequestModal, setShowRequestModal] = useState(false);
-  const [showManager, setShowManager] = useState(
-    router.query.manage == '1' ? true : false
-  );
+  const [showManager, setShowManager] = useState(false);
   const [showIssueModal, setShowIssueModal] = useState(false);
 
-  const {
-    data,
-    error,
-    mutate: revalidate,
-  } = useSWR<TvDetailsType>(`/api/v1/tv/${router.query.tvId}`, {
-    fallbackData: tv,
-  });
+  const { data, error, revalidate } = useSWR<TvDetailsType>(
+    `/api/v1/tv/${router.query.tvId}`,
+    {
+      initialData: tv,
+    }
+  );
 
   const { data: ratingData } = useSWR<RTRating>(
     `/api/v1/tv/${router.query.tvId}/ratings`
@@ -101,10 +98,6 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
     () => sortCrewPriority(data?.credits.crew ?? []),
     [data]
   );
-
-  useEffect(() => {
-    setShowManager(router.query.manage == '1' ? true : false);
-  }, [router.query.manage]);
 
   if (!data && !error) {
     return <LoadingSpinner />;
@@ -116,12 +109,7 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
 
   const mediaLinks: PlayButtonLink[] = [];
 
-  if (
-    data.mediaInfo?.plexUrl &&
-    hasPermission([Permission.REQUEST, Permission.REQUEST_TV], {
-      type: 'or',
-    })
-  ) {
+  if (data.mediaInfo?.plexUrl) {
     mediaLinks.push({
       text: intl.formatMessage(messages.playonplex),
       url: data.mediaInfo?.plexUrl,
@@ -130,7 +118,6 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
   }
 
   if (
-    settings.currentSettings.series4kEnabled &&
     data.mediaInfo?.plexUrl4k &&
     hasPermission([Permission.REQUEST_4K, Permission.REQUEST_4K_TV], {
       type: 'or',
@@ -168,7 +155,7 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
   )?.rating;
   if (contentRating) {
     seriesAttributes.push(
-      <span className="rounded-md border p-0.5 py-0">{contentRating}</span>
+      <span className="p-0.5 py-0 border rounded-md">{contentRating}</span>
     );
   }
 
@@ -266,13 +253,7 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
       <ManageSlideOver
         data={data}
         mediaType="tv"
-        onClose={() => {
-          setShowManager(false);
-          router.push({
-            pathname: router.pathname,
-            query: { tvId: router.query.tvId },
-          });
-        }}
+        onClose={() => setShowManager(false)}
         revalidate={() => revalidate()}
         show={showManager}
       />
@@ -296,30 +277,29 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
             <StatusBadge
               status={data.mediaInfo?.status}
               inProgress={(data.mediaInfo?.downloadStatus ?? []).length > 0}
-              tmdbId={data.mediaInfo?.tmdbId}
-              mediaType="tv"
               plexUrl={data.mediaInfo?.plexUrl}
+              serviceUrl={
+                hasPermission(Permission.ADMIN)
+                  ? data.mediaInfo?.serviceUrl
+                  : undefined
+              }
             />
             {settings.currentSettings.series4kEnabled &&
-              hasPermission(
-                [
-                  Permission.MANAGE_REQUESTS,
-                  Permission.REQUEST_4K,
-                  Permission.REQUEST_4K_TV,
-                ],
-                {
-                  type: 'or',
-                }
-              ) && (
+              hasPermission([Permission.REQUEST_4K, Permission.REQUEST_4K_TV], {
+                type: 'or',
+              }) && (
                 <StatusBadge
                   status={data.mediaInfo?.status4k}
                   is4k
                   inProgress={
                     (data.mediaInfo?.downloadStatus4k ?? []).length > 0
                   }
-                  tmdbId={data.mediaInfo?.tmdbId}
-                  mediaType="tv"
                   plexUrl={data.mediaInfo?.plexUrl4k}
+                  serviceUrl={
+                    hasPermission(Permission.ADMIN)
+                      ? data.mediaInfo?.serviceUrl4k
+                      : undefined
+                  }
                 />
               )}
           </div>
@@ -377,7 +357,7 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
                 <ExclamationIcon className="w-5" />
               </Button>
             )}
-          {hasPermission(Permission.MANAGE_REQUESTS) && data.mediaInfo && (
+          {hasPermission(Permission.MANAGE_REQUESTS) && (
             <Button
               buttonType="default"
               className="relative ml-2 first:ml-0"
@@ -396,8 +376,8 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
                   ) ?? []
                 ).length > 0 && (
                   <>
-                    <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-600" />
-                    <div className="absolute -right-1 -top-1 h-3 w-3 animate-ping rounded-full bg-red-600" />
+                    <div className="absolute w-3 h-3 bg-red-600 rounded-full -right-1 -top-1" />
+                    <div className="absolute w-3 h-3 bg-red-600 rounded-full -right-1 -top-1 animate-ping" />
                   </>
                 )}
             </Button>
@@ -439,11 +419,11 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
                     </li>
                   ))}
               </ul>
-              <div className="mt-4 flex justify-end">
+              <div className="flex justify-end mt-4">
                 <Link href={`/tv/${data.id}/crew`}>
                   <a className="flex items-center text-gray-400 transition duration-300 hover:text-gray-100">
                     <span>{intl.formatMessage(messages.viewfullcrew)}</span>
-                    <ArrowCircleRightIcon className="ml-1.5 inline-block h-5 w-5" />
+                    <ArrowCircleRightIcon className="inline-block w-5 h-5 ml-1.5" />
                   </a>
                 </Link>
               </div>
@@ -459,9 +439,9 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
                 {ratingData?.criticsRating && !!ratingData?.criticsScore && (
                   <span className="media-rating">
                     {ratingData.criticsRating === 'Rotten' ? (
-                      <RTRotten className="mr-1 w-6" />
+                      <RTRotten className="w-6 mr-1" />
                     ) : (
-                      <RTFresh className="mr-1 w-6" />
+                      <RTFresh className="w-6 mr-1" />
                     )}
                     {ratingData.criticsScore}%
                   </span>
@@ -469,16 +449,16 @@ const TvDetails: React.FC<TvDetailsProps> = ({ tv }) => {
                 {ratingData?.audienceRating && !!ratingData?.audienceScore && (
                   <span className="media-rating">
                     {ratingData.audienceRating === 'Spilled' ? (
-                      <RTAudRotten className="mr-1 w-6" />
+                      <RTAudRotten className="w-6 mr-1" />
                     ) : (
-                      <RTAudFresh className="mr-1 w-6" />
+                      <RTAudFresh className="w-6 mr-1" />
                     )}
                     {ratingData.audienceScore}%
                   </span>
                 )}
                 {!!data.voteCount && (
                   <span className="media-rating">
-                    <TmdbLogo className="mr-2 w-6" />
+                    <TmdbLogo className="w-6 mr-2" />
                     {data.voteAverage}/10
                   </span>
                 )}

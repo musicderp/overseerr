@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import useSWR, { mutate } from 'swr';
 import useLocale from '../../hooks/useLocale';
+import { useRouter } from '../../hooks/useRouter';
+import addBasePath from '../../utils/addBasePath';
 import AppDataWarning from '../AppDataWarning';
 import Badge from '../Common/Badge';
 import Button from '../Common/Button';
@@ -58,7 +59,7 @@ const Setup: React.FC = () => {
   });
 
   return (
-    <div className="relative flex min-h-screen flex-col justify-center bg-gray-900 py-12">
+    <div className="relative flex flex-col justify-center min-h-screen py-12 bg-gray-900">
       <PageTitle title={intl.formatMessage(messages.setup)} />
       <ImageFader
         backgroundImages={
@@ -67,19 +68,19 @@ const Setup: React.FC = () => {
           ) ?? []
         }
       />
-      <div className="absolute top-4 right-4 z-50">
+      <div className="absolute z-50 top-4 right-4">
         <LanguagePicker />
       </div>
       <div className="relative z-40 px-4 sm:mx-auto sm:w-full sm:max-w-4xl">
         <img
-          src="/logo_stacked.svg"
-          className="mb-10 max-w-full sm:mx-auto sm:max-w-md"
+          src={addBasePath('/logo_stacked.svg')}
+          className="max-w-full mb-10 sm:max-w-md sm:mx-auto"
           alt="Logo"
         />
         <AppDataWarning />
         <nav className="relative z-50">
           <ul
-            className="divide-y divide-gray-600 rounded-md border border-gray-600 bg-gray-800 bg-opacity-50 md:flex md:divide-y-0"
+            className="bg-gray-800 bg-opacity-50 border border-gray-600 divide-y divide-gray-600 rounded-md md:flex md:divide-y-0"
             style={{ backdropFilter: 'blur(5px)' }}
           >
             <SetupSteps
@@ -102,7 +103,7 @@ const Setup: React.FC = () => {
             />
           </ul>
         </nav>
-        <div className="mt-10 w-full rounded-md border border-gray-600 bg-gray-800 bg-opacity-50 p-4 text-white">
+        <div className="w-full p-4 mt-10 text-white bg-gray-800 bg-opacity-50 border border-gray-600 rounded-md">
           {currentStep === 1 && (
             <LoginWithPlex onComplete={() => setCurrentStep(2)} />
           )}
@@ -117,7 +118,7 @@ const Setup: React.FC = () => {
               </div>
               <div className="actions">
                 <div className="flex justify-end">
-                  <span className="ml-3 inline-flex rounded-md shadow-sm">
+                  <span className="inline-flex ml-3 rounded-md shadow-sm">
                     <Button
                       buttonType="primary"
                       disabled={!plexSettingsComplete}
@@ -135,7 +136,7 @@ const Setup: React.FC = () => {
               <SettingsServices />
               <div className="actions">
                 <div className="flex justify-end">
-                  <span className="ml-3 inline-flex rounded-md shadow-sm">
+                  <span className="inline-flex ml-3 rounded-md shadow-sm">
                     <Button
                       buttonType="primary"
                       onClick={() => finishSetup()}

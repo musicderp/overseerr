@@ -6,12 +6,13 @@ import {
   UsersIcon,
   XIcon,
 } from '@heroicons/react/outline';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { ReactNode, useRef } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import useClickOutside from '../../../hooks/useClickOutside';
+import { useRouter } from '../../../hooks/useRouter';
 import { Permission, useUser } from '../../../hooks/useUser';
+import addBasePath from '../../../utils/addBasePath';
+import Link from '../../Link';
 import Transition from '../../Transition';
 import VersionStatus from '../VersionStatus';
 
@@ -130,8 +131,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setClosed }) => {
                   >
                     <div className="flex flex-shrink-0 items-center px-2">
                       <span className="px-4 text-xl text-gray-50">
-                        <a href="/">
-                          <img src="/logo_full.svg" alt="Logo" />
+                        <a href={addBasePath('/')}>
+                          <img src={addBasePath('/logo_full.svg')} alt="Logo" />
                         </a>
                       </span>
                     </div>
@@ -199,8 +200,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setClosed }) => {
             <div className="flex flex-1 flex-col overflow-y-auto pt-8 pb-4">
               <div className="flex flex-shrink-0 items-center">
                 <span className="px-4 text-2xl text-gray-50">
-                  <a href="/">
-                    <img src="/logo_full.svg" alt="Logo" />
+                  <a href={addBasePath('/')}>
+                    <img src={addBasePath('/logo_full.svg')} alt="Logo" />
                   </a>
                 </span>
               </div>
